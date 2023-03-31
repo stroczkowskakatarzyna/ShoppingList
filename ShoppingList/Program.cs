@@ -1,27 +1,88 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using ShoppingList.Models;
 
+var shoppingList = new List<Item>();
 var badWords = new List<string>() { "dupa", "pupa" };
-
-var shoppingList = new List<string>();
-
-shoppingList.Add("Apple");
-shoppingList.Add("Orange");
-shoppingList.Add("Beer 0%");
-shoppingList.Add("Wine 0%");
-
 string? error = null;
 
-while (true) 
+while (true)
 {
     Console.Clear();
-    Console.WriteLine("Shopping List");
+    Console.WriteLine("Lista zakupów");
     Console.WriteLine("----------------------------");
     for (int index = 0; index < shoppingList.Count; index++)
     {
-        Console.WriteLine((index + 1) + ". " + shoppingList[index]);
+        var item = shoppingList[index];
+        var isDone = item.IsDone;
+        //var markAsDoneDate = item.MarkAsDoneDate;
+
+        Console.WriteLine((index + 1) + ". " + item.Name + " ");
+
     }
     Console.WriteLine("----------------------------");
-    Console.WriteLine("Jeśli chcesz dodać produkt wybierz 1, jeśli chcesz usunąć produkt wybierz 2, jeśli chcesz wyłączyć listę wybierz 3");
+    Console.WriteLine("Produkty kupione");
+    Console.WriteLine("----------------------------");
+
+    for (int index = 0; index < shoppingList.Count; index++)    //kupione
+    {
+        var item = shoppingList[index];
+        var isDone = item.IsDone;
+        var markAsDoneDate = item.MarkAsDoneDate;
+
+        if (markAsDoneDate != null)
+        {
+            Console.WriteLine((index + 1) + ". " + (isDone ? "[X] " : "[O] ") + item.Name + " " + markAsDoneDate);
+        }
+        else
+        {
+            Console.WriteLine("");
+        }
+        //index jako np number, intex bez 0, 
+    }
+    Console.WriteLine("----------------------------");
+    Console.WriteLine("Produkty ważne");
+    Console.WriteLine("----------------------------");
+    for (int index = 0; index < shoppingList.Count; index++)    //ważne
+    {
+        var item = shoppingList[index];
+        var isImportant = item.IsImportant;
+
+        if (isImportant != false)
+        {
+            Console.WriteLine((index + 1) + ". " + item.Name + " " + (isImportant ? " - PAMIĘTAJ O TYM!" : ""));
+        }
+        else
+        {
+            Console.WriteLine("");
+        }
+
+    }
+    Console.WriteLine("----------------------------");
+    Console.WriteLine("Produkty nieważne");
+    Console.WriteLine("----------------------------");
+    for (int index = 0; index < shoppingList.Count; index++)    //nieważne
+    {
+        var item = shoppingList[index];
+        var isImportant = item.IsImportant;
+
+        if (isImportant != true)
+        {
+            Console.WriteLine((index + 1) + ". " + item.Name + " " + (isImportant ? "" : " - LEPIEJ NIE KUPUJ ;)"));
+        }
+        else
+        {
+            Console.WriteLine("");
+        }
+
+    }
+
+    Console.WriteLine("----------------------------");
+    Console.WriteLine("Wybierz odpowiedni numer: 1 - dodaj produkt," +
+            "2 - usuń produkt, " +
+            "3 - zaznacz jako kupiony, " +
+            "4 - zaznacz jako niekupiony, " +
+            "5 - zaznacz jako ważny, " +
+            "6 - zaznacz jako nieważny, " +
+            "0 - zamknij listę zakupów");
 
     if (error != null)
     {
@@ -34,26 +95,29 @@ while (true)
     if (numberOfAction == "1")
     {
         Console.WriteLine("Wpisz nazwę kolejnego produktu:");
-        var newItem = Console.ReadLine();
+        var newItemName = Console.ReadLine();
 
         for (int index = 0; index < badWords.Count; index++)
         {
-            if (newItem.Replace(" ", "").ToLower().Contains(badWords[index]))
+            if (newItemName.Replace(" ", "").ToLower().Contains(badWords[index]))
             {
                 error = "Nieładnie!";
             }
         }
         if (error == null)
         {
-            newItem = newItem.Trim();
+            newItemName = newItemName.Trim();
+
+            var newItem = new Item(newItemName);
 
             shoppingList.Add(newItem);
+
         }
 
     }
     else if (numberOfAction == "2")
     {
-        
+
         Console.WriteLine("Wpisz numer produktu, który chcesz usunąć:");
         string newItemRemove = Console.ReadLine();
         int numberRemove = int.Parse(newItemRemove);
@@ -68,9 +132,78 @@ while (true)
             error = "Podaj właściwy numer";
         }
 
-       
+
     }
-    else  if  (numberOfAction == "3")
+    else if (numberOfAction == "3")
+    {
+        Console.WriteLine("Wpisz numer produktu, który chcesz zaznaczyć:");
+        string newItemDone = Console.ReadLine();
+        int numberDone = int.Parse(newItemDone);
+
+        if (numberDone <= shoppingList.Count)
+        {
+
+            shoppingList[numberDone - 1].MarkAsDone();
+
+        }
+        else
+        {
+            error = "Podaj właściwy numer";
+        }
+
+    }
+    else if (numberOfAction == "4")
+    {
+        Console.WriteLine("Wpisz numer produktu, który chcesz odznaczyć:");
+        string newItemNotDone = Console.ReadLine();
+        int numberNotDone = int.Parse(newItemNotDone);
+
+        if (numberNotDone <= shoppingList.Count)
+        {
+
+            shoppingList[numberNotDone - 1].MarkAsNotDone();
+        }
+        else
+        {
+            error = "Podaj właściwy numer";
+        }
+
+    }
+    else if (numberOfAction == "5")
+    {
+        Console.WriteLine("Wpisz numer produktu, który chcesz oznaczyć jako ważny:");
+        string newItemImportant = Console.ReadLine();
+        int numberImportant = int.Parse(newItemImportant);
+
+        if (numberImportant <= shoppingList.Count)
+        {
+
+            shoppingList[numberImportant - 1].ImportantProduct();
+        }
+        else
+        {
+            error = "Podaj właściwy numer";
+        }
+
+    }
+    else if (numberOfAction == "6")
+    {
+        Console.WriteLine("Wpisz numer produktu, który chcesz oznaczyć jako nieważny:");
+        string newItemNotImportant = Console.ReadLine();
+        int numberNotImportant = int.Parse(newItemNotImportant);
+
+        if (numberNotImportant <= shoppingList.Count)
+        {
+
+            shoppingList[numberNotImportant - 1].NotImportantProduct();
+        }
+        else
+        {
+            error = "Podaj właściwy numer";
+        }
+    }
+
+    else if (numberOfAction == "0")
     {
         Console.Clear();
         break;
@@ -82,27 +215,3 @@ while (true)
     }
 }
 
-
-
-
-// Shopping List
-// 1. Apple
-// ...
-// 4. Wine
-// ------------
-// Wpisz nazwę kolejnego produktu: __
-
-// Shopping List
-// 1. Apple
-// ...
-// 4. Wine
-// ------------
-// Wpisz nazwę kolejnego produktu: Czipsy
-
-// Shopping List
-// 1. Apple
-// ...
-// 4. Wine
-// 5. Czipsy
-// ------------
-// Wpisz nazwę kolejnego produktu: 
